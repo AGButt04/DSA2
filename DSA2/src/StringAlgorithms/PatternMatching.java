@@ -1,5 +1,7 @@
 package StringAlgorithms;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PatternMatching {
 
@@ -8,7 +10,42 @@ public class PatternMatching {
 		String pattern = "aabb";
 		int count = RabinKarp(text, pattern);
 		System.out.println("The index where pattern occurs in text is: " + count + ".");
+		String[] str = {"aaabaaddae", "aed"};
+		String[]str2 = {"aaffsfsfasfasfasfasfasfacasfafe", "fafe"};
+		System.out.println(minSubstring(str));
 	}
+	
+	public static String minSubstring(String[] str) {
+		String phrase = str[0];
+		String min = phrase;
+		String sub = str[1];
+		for (int i = 0; i < phrase.length(); i++) {
+			String current = "";
+			List<Character> chars = str[1].chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+			char c  = phrase.charAt(i);
+			if (sub.indexOf(c) != -1) {
+				current += c;
+				chars.remove(Character.valueOf(c));
+				int j = i + 1;
+				while (!chars.isEmpty() && j < phrase.length()) {
+					char ch  = phrase.charAt(j);
+					if (sub.indexOf(ch) != -1) {
+						chars.remove(Character.valueOf(ch));
+					}
+					current += ch;
+					j++;
+				}
+				
+				if (chars.isEmpty() && min.length() > current.length())
+					min = current;
+			} else {
+				continue;
+			}
+		}
+		
+		return min;
+	}
+	
 	
 	public static int bruteForce(String text, String pattern) {
 		int index = 0;
@@ -32,6 +69,26 @@ public class PatternMatching {
 			lastT.put(pattern.charAt(i), i);
 		}
 		return lastT;
+	}
+
+	public static String FindIntersection(String[] strArr) {
+	    String[] arr1 = strArr[0].split(", ");
+	    String[] arr2 = strArr[1].split(", ");
+	    String result = "";
+	    int ar1 = 0, ar2 = 0;
+	    while (ar1 < arr1.length && ar2 < arr2.length) {
+	    	int num1 = Integer.parseInt(arr1[ar1]);
+	    	int num2 = Integer.parseInt(arr2[ar2]);
+	    	if (num1 == num2) {
+	    		result += arr1[ar1] + ",";
+	    		ar2++; ar1++;
+	    	} else if (num1 < num2) {
+	    		ar1++;
+	    	} else {
+	    		ar2++;
+	    	}
+	    }
+	    return result.substring(0, result.length() - 1);
 	}
 	
 	public static int boyerMoore(String text, String pattern) {
