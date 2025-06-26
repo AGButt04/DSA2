@@ -29,19 +29,19 @@ public class ArraySorts {
 	private static long swaps;
 	private static Random rand = new Random();
 	
+	public static void swap(int[] arr, int ind1, int ind2) {
+		int temp = arr[ind1];
+		arr[ind1] = arr[ind2];
+		arr[ind2] = temp;
+		swaps++;
+	}
+	
 	public static boolean isSorted(int[] nums) {
 		for (int i = 1; i < nums.length; i++) {
 			if (nums[i-1] > nums[i])
 				return false;
 		}
 		return true;
-	}
-	
-	public static void swap(int[] arr, int ind1, int ind2) {
-		int temp = arr[ind1];
-		arr[ind1] = arr[ind2];
-		arr[ind2] = temp;
-		swaps++;
 	}
 	
 	public static int quickSelect(int[] nums, int k) {
