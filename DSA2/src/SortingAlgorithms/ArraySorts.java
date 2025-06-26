@@ -7,7 +7,8 @@ import java.util.Random;
 public class ArraySorts {
 
 	public static void main(String[] args) {
-		int[] nums1 = {6, 4, 2, 5, 3, 7, 6, 8, 9 ,10};
+		int[] nums1 = {3, 2, 1, 5, 6, 4};
+		quickSort(nums1);
 		//int[] nums1 = {5, 4, 6, 9, 8, 7, 6, 2};
 		//int[] nums1 = {17, 743, 672, 780, 917, 743, 623, 288, 432, 281, 76};
 		int[] nums2 = generateRandomArray(1000000);
@@ -18,10 +19,10 @@ public class ArraySorts {
 		System.out.println("Done!\nTime: "+(System.currentTimeMillis() - time + " ms"));
 		System.out.println("Is sorted? "+isSorted(nums2));
 		System.out.println(comparisons + " comparisons"+ ", " + swaps + " swaps.");
-//		for (int i : nums2) {
-//			System.out.print(i + " ");
-//		}
-//		System.out.println();
+		for (int i : nums1) {
+			System.out.print(i + " ");
+		}
+		System.out.println();
 	}
 	
 	private static long comparisons;
@@ -135,10 +136,6 @@ public class ArraySorts {
 				array[i] = nums[right++];
 			}
 		}
-		for (int i : array) {
-			System.out.print(i + " ");
-		}
-		System.out.println();
 		for (int i = 0; i < array.length; i++) {
 			nums[start++] = array[i];
 		}

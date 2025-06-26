@@ -1,5 +1,7 @@
 package Trees;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BSTree {
 	public static void main(String[] args) {
@@ -128,6 +130,41 @@ public class BSTree {
 		else
 			return Math.max(tHeight(walker.right), tHeight(walker.left)) + 1;
 	}
+	
+	public static String treeConstructor(String[] str) {
+		HashMap<String, ArrayList<String>> parents = new HashMap<>(); // At most two children
+		HashMap<String, String> children = new HashMap<>(); //At most one parent
+		
+		for (int i = 0 ; i < str.length; i++) {
+			String st = str[i];
+			st = st.replaceAll("[()]", "");
+			String[] stArr = st.split(",");
+			String child = stArr[0];
+			String parent = stArr[1];
+			
+			if (parents.get(parent) != null) {
+				ArrayList<String> childs = parents.get(parent);
+				childs.add(child);
+				parents.put(parent, childs);
+			} else {
+				ArrayList<String> ch = new ArrayList<>();
+				ch.add(child);
+				parents.put(parent, ch);
+			}
+			
+			if (parents.get(parent).size() > 2)
+				return "false";
+			
+			if (children.put(child, parent) != null) {
+				return "false";
+			} else {
+				children.put(child, parent);
+			}
+		}
+		
+		return "true";
+	}
+	
 	
 	public void print() {
 		print(root);
