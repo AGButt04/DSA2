@@ -4,30 +4,141 @@ import java.util.HashMap;
 
 public class FastSlowPointers {
 	public static void main(String[] args) {
-		ListNode head = new ListNode(1);
-		ListNode two = new ListNode(2);
+		ListNode head = new ListNode(-1);
+		ListNode two = new ListNode(5);
 		ListNode three = new ListNode(3);
 		ListNode four = new ListNode(4);
-//		ListNode five = new ListNode(5);
+		ListNode five = new ListNode(0);
 //		ListNode six = new ListNode(66);
 //		ListNode tail = new ListNode(77);
 		head.next = two; 
 		two.next = three;
 		three.next = four;
-		four.next = null;
-//		five.next = null;
+		four.next = five;
+		five.next = null;
 //		six.next = tail;
 //		tail.next = null;
 //		ListNode cycle = detectCycle(head);
 //		System.out.println(cycle.val);
-		int[] nums = {1,3,4,2,2};
-		reorder(head);
-		ListNode walker = head;
+		ListNode walker = sortList(head);
 		while (walker != null) {
 			System.out.print(walker.val + " ");
 			walker = walker.next;
 		}
 		System.out.println();
+	}
+	
+	public static ListNode merge(ListNode head1, ListNode head2) {
+		/*
+		 * Leet-code 148's helper method
+		 */
+		
+		// Initializing dummy node to keep track of head of new merged list.
+		ListNode dummy = new ListNode(0);
+		ListNode walker = dummy; // Starting walker at the dummy node.
+		
+		// Looping till one of the lists are fully merged.
+		while (head1 != null && head2 != null) {
+			// Check if head1's value is smaller.
+			if (head1.val <= head2.val) {
+				// Yes, we just link them to our new list, and
+				walker.next = head1;
+				head1 = head1.next; // move the pointer which has been linked.
+			} else {
+				// Else, we do the same with the other pointer.
+				walker.next = head2;
+				head2 = head2.next;
+			}
+			
+			// Move our walker ahead each iteration.
+			walker = walker.next;
+		}
+		
+		// At the end, we see which list still has elements in it,
+		// and link that remaining list to the our new list.
+		walker.next = (head1 == null)? head2 : head1;
+		
+		// return dummy.next as that is the head of the new list.
+		return dummy.next;
+	}
+	
+	public static ListNode sortList(ListNode head) {
+		/*
+		 * Leet-code 148 (medium)
+		 * Using recursive merge sort in this problem.
+		 */
+		// Base case: If our head is null (size = 0), or 
+		// head.next = null (size = 1) just return head to the recursive call.
+		if (head == null || head.next == null)
+			return head;
+		
+		// Using slow and fast pointers to find middle node
+		// Basically, breaking the list in half using prev as well.
+		ListNode slow = head;
+		ListNode fast = head;
+		ListNode prev = null;
+		while (fast != null && fast.next != null) {
+			prev = slow;
+			slow = slow.next;
+			fast = fast.next.next;
+		}
+		prev.next = null; // Break the link between two lists
+		
+		// Two recursive calls sorting left half and right half
+		ListNode head1 = sortList(head);
+		ListNode head2 = sortList(slow);
+		
+		// After sorting both halves, merge both back in using merge method.
+		return merge(head1, head2);
+	}
+	
+	public static ListNode rotateList(ListNode head, int k) {
+		/*
+		 * Leet-code 61 (medium)
+		 */
+		
+		// Edge case: If the head == null (empty list) or 
+		// if head.next == null (Length = 1) just return head.
+		if (head == null || head.next == null || k == 0)
+			return head;
+		
+		// First we have to find the length of the list
+		// in order to walk to the (length - k) node.
+		ListNode walker1 = head;
+		int length = 0;
+		while (walker1 != null) {
+			length++;
+			walker1 = walker1.next;
+		}
+		
+		// This will take care of the fact if k is greater than list's length.
+		// If it is say 4, and length is 3. We just need to rotate 4%3=1 times
+		k = k % length;
+		// And if the k == length of the list, then we just return head back.
+		// Because rotating the list length number of times return the original list.
+		if (k == 0)		return head;
+		
+		// Now, we have to walk to the (length - k)th node to break the link.
+		walker1 = head;
+		int index = 1;
+		while (index < (length - k)) {
+			index++;
+			walker1 = walker1.next;
+		}
+		
+		// New head is the next node of our (Length - k)th node.
+		ListNode newhead = walker1.next;
+		walker1.next = null; // Break the link between two nodes.
+		walker1 = newhead;
+		// Then we walk to the end of the new list (broken)
+		while (walker1.next != null) {
+			walker1 = walker1.next;
+		}
+		// And just attach the last node with previous list's head.
+		walker1.next = head;
+		
+		// return new-head which is the head of the new list now.
+		return newhead;
 	}
 	
 	public static void reorder(ListNode head) {
