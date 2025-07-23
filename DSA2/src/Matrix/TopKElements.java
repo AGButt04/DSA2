@@ -22,7 +22,7 @@ public class TopKElements {
 		 */
 		/*
 		 * This problem can be solved with using Min Heap.
-		 * Where the kth largest element is required.
+		 * Where the kth-largest element is required.
 		 */
 		PriorityQueue<Integer> minheap = new PriorityQueue<>();
 		for (int n : nums) {
