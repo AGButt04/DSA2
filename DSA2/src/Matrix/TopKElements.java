@@ -1,5 +1,6 @@
 package Matrix;
 import java.util.ArrayList;
+import Matrix.FastSlowPointers.ListNode;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +25,85 @@ public class TopKElements {
 		System.out.println();
 	}
 	
+	public static ListNode mergeKlists2(ListNode[] lists) {
+		/*
+		 * Leet-code 23 (Hard) Optimized -> O(n log k) time
+		 */
+		/*
+		 * This optimized approach has a slightly different method, as here
+		 * we are not adding each element into the heap but rather the head
+		 * of each list, and not creating the new nodes but adding the previous ones.
+		 */
+		PriorityQueue<ListNode> minheap = new PriorityQueue<>((a,b) -> a.val - b.val);
+		ListNode mergeList = new ListNode(0);
+		ListNode dummy = mergeList;
+		for (ListNode list : lists) {
+			/*
+			 * Here, we are just adding the lists, so this would run O(k)
+			 * times instead which is quite better.
+			 */
+			if (list != null)
+				minheap.offer(list);
+		}
+		while (!minheap.isEmpty()) {
+			/*
+			 * Here we pop the top list of the heap as it would have the
+			 * smallest head, and add it to our merged list, and then see
+			 * if this has more elements in it, if yes, put it back so that
+			 * they are sorted too, and keep on doing this until heap is empty.
+			 * This would result in O(n log k) time complexity with O(n) space,
+			 * because we are also not creating new nodes but linking the existing ones.
+			 */
+			ListNode smallest = minheap.poll();
+			dummy.next = smallest;
+			
+			if (smallest.next != null) {
+				minheap.offer(smallest.next);
+			}
+			dummy = dummy.next;
+		}
+		return mergeList.next;
+	}
+	
+	public static ListNode mergeKlists(ListNode[] lists) {
+		/*
+		 * Leet-code 23 (Hard) O(n log n) time with O(n) space
+		 */
+		/*
+		 * This problem requires the merging of K sorted lists,
+		 * for which we can use a Priority Queue -> Min heap. Here,
+		 * we initialize a heap and a new list variable that would be
+		 * returned at the end with the merged list. And a walker that
+		 * would walk ahead and create the new nodes and add them.
+		 */
+		PriorityQueue<ListNode> minheap = new PriorityQueue<>((a, b) -> a.val - b.val);
+		ListNode mergedList = new ListNode(0);
+		ListNode mergewalker = mergedList;
+		for (ListNode list : lists) {
+			/*
+			 * Here we are going in each list of the lists array, and
+			 * walking through it and start adding its elements into
+			 * the heap, and moving the walker along and initialize again.
+			 */
+			ListNode walker = list;
+			while (walker != null) {
+				minheap.offer(walker);
+				walker = walker.next;
+			}
+		}
+		/*
+		 * Here, we are just going through the heap and removing the
+		 * top elements as they are sorted and creating new nodes
+		 * and adding to the new list we're building.
+		 */
+		while (!minheap.isEmpty()) {
+			mergewalker.next = new ListNode(minheap.poll().val);
+			mergewalker = mergewalker.next;
+		}
+		// return the new list's next pointer which is the head.
+		return mergedList.next;
+	}
+	
 	public static int kthSmallestMatrix(int[][] matrix, int k) {
 		/*
 		 * Leet-code 378 (Matrix Traversal)
@@ -38,7 +118,9 @@ public class TopKElements {
 		 */
 		PriorityQueue<int[]> minheap = new PriorityQueue<>((a, b) ->
 			matrix[a[0]][a[1]] - matrix[b[0]][b[1]]);
-		HashSet<String> visitedset = new HashSet<>(); // Sets can't see the diff between duplicate arrays so need strings.
+		// Sets can't see the difference between duplicate arrays so need strings.
+		HashSet<String> visitedset = new HashSet<>();
+		
 		minheap.offer(new int[] {0,0});
 		for (int i = 0; i < k-1; i++) {
 			int[] indexes = minheap.poll();
