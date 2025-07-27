@@ -379,7 +379,7 @@ public class FastSlowPointers {
 		return false;
 	}
 	
-	private static class ListNode {
+	public static class ListNode {
 		int val;
 		ListNode next;
 		
