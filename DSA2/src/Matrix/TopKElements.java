@@ -17,13 +17,89 @@ public class TopKElements {
 		int[][] matrix = {{1,5,9},{10,11,13},{12,13,15}};
 		int[][] mat = {{-5}};
 		int k = 4;
-		System.out.println(kthsmallest(matrix, 6));
-		List<String> answer = topKfrequent(words, 2);
-		for (String a : answer) {
-			System.out.print(a + " ");
-		}
-		System.out.println();
+//		System.out.println(kthsmallest(matrix, 6));
+//		List<String> answer = topKfrequent(words, 2);
+//		for (String a : answer) {
+//			System.out.print(a + " ");
+//		}
+//		System.out.println();
+		MedianFinder m = new MedianFinder();
+		m.addNum(1);
+		m.addNum(2);
+		System.out.println(m.findMedian());
+		m.addNum(3);
+		System.out.println(m.findMedian());
+		
 	}
+	
+	static class MedianFinder {
+	/*
+	 * Leet-code 295 (Hard)
+	 */
+	/*
+	 * Here we are going to do two-heap approach
+	 * min-heap will be bigger and will keep track of the second half (bigger elements).
+	 * max-heap will be smaller or equal and keep track of first half (smaller elements).
+	 * This way we know that the median is between the top's of both heaps.
+	 */
+	private PriorityQueue<Integer> minheap;
+	private PriorityQueue<Integer> maxheap;
+	
+    public MedianFinder() {
+    	/*
+    	 * In the constructor, we initialize both min and max heaps.
+    	 */
+        minheap = new PriorityQueue<>();
+        maxheap = new PriorityQueue<>(Collections.reverseOrder());
+    }
+    
+    public void addNum(int num) {
+    	/*
+    	 * This function is the main logic:
+    	 * If the max-heap is empty or the number is smaller than the 
+    	 * top of the max-heap, then we add it to the max-heap as the
+    	 * number belongs to the smaller side of the array. 
+    	 * Else we add it to the min-heap (bigger side)
+    	 */
+    	if (maxheap.isEmpty() || num <= maxheap.peek())
+    		maxheap.offer(num);
+    	else
+    		minheap.offer(num);
+    	/*
+    	 * Here, we have to maintain the balance of both heaps, so that
+    	 * they maintain the median property, and if one heap has more
+    	 * elements then one, we won't be able to find the median efficiently.
+    	 * The heaps can have a difference of one at max.
+    	 */
+    	if (maxheap.size() > minheap.size()+1)
+    		minheap.offer(maxheap.poll());
+    	else if (minheap.size() > maxheap.size()+1)
+    		maxheap.offer(minheap.poll());
+    }
+    
+    public double findMedian() {
+    	double median = 0.0;
+    	/*
+    	 * Here, we just check if the number of elements we have
+    	 * so far, are even or odd, if even, we peek the top two
+    	 * elements of both heaps and return the median.
+    	 */
+    	if ((minheap.size() + maxheap.size()) % 2 == 0)
+    		median = (double) (minheap.peek() + maxheap.peek()) / 2;
+    	else {
+    		/*
+    		 * If its odd, then the median is in the bigger heap,
+    		 * most of the time min-heap will be bigger, but the
+    		 * max-heap also could have it as we add elements to it first.
+    		 */
+    		if (minheap.size() > maxheap.size())
+    			median = minheap.peek();
+    		else
+    			median = maxheap.peek();
+    	}
+        return median;
+    }
+}
 	
 	public static ListNode mergeKlists2(ListNode[] lists) {
 		/*
