@@ -13,6 +13,64 @@ public class BinarySearch {
 
 	}
 	
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    	/*
+    	 * Leet-code 4 (Too Hard)
+    	 */
+    	/*
+    	 * We will use binary search to do this problem in O(log(m+n)) time.
+    	 * This can be solved in O(n+m) by merging the sorted array in linear
+    	 * time, and just getting the median out of the merged array. Binary
+    	 * search approach will partition the array into left and right parts
+    	 * of both arrays where Max(left partition) <= Min(right partition).
+    	 * And the median will be the at the last index of partition one and
+    	 * first index of the partition two, which will keep track of by pointers
+    	 * First of all, for efficiency we will always check for smaller array.
+    	 */
+    	if (nums1.length > nums2.length)
+    		return findMedianSortedArrays(nums2, nums1);
+    	
+    	/*
+    	 * We will initialize the length of left and right partitions, where
+    	 * left will be no more than half of the array + 1. And left and right
+    	 * pointers for the binary search, where right = m (smaller array pointer)
+    	 */
+    	int m = nums1.length, n = nums2.length;
+    	int leftsize = (m+n+1)/2;
+    	
+    	int left = 0, right = m-1;
+    	while (left <= right) {
+    		int mid1 = (left+right)/2; // Partition index for nums1
+    		int mid2 = leftsize - mid1; // Partition index for nums2
+    		
+    		/*
+    		 * Then we find the minimum and maximum of both partitions
+    		 * and check if satisfy the property of partition.
+    		 */
+    		int left1 = (mid1 == 0)? Integer.MIN_VALUE : nums1[mid1-1];
+    		int left2 = (mid2 == 0)? Integer.MIN_VALUE : nums1[mid2-1];
+    		
+    		int right1 = (mid1 == m)? Integer.MAX_VALUE : nums2[mid1];
+    		int right2 = (mid2 == n)? Integer.MAX_VALUE : nums2[mid2];
+    		
+    		/*
+    		 * If they satisfy the condition, then we have a partition.
+    		 */
+    		if (left1 <= right2 && left2 <= right1) {
+    			if ((n + m) % 2 == 0)
+    				return (Math.max(left1, left2) + Math.min(right1, right2)) / 2.0;
+    			else
+    				return Math.max(left1, left2);
+    		} else if (left1 > right2)
+    			right = mid1 - 1;
+    		else
+    			left = mid1 + 1;
+    	}
+    	
+    	return 0.0;
+    }
+
+	
     public static boolean searchMatrix(int[][] matrix, int target) {
     	/*
     	 * Leet-code 74
