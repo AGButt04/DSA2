@@ -13,6 +13,60 @@ public class BinarySearch {
 
 	}
 	
+    public static boolean searchMatrix(int[][] matrix, int target) {
+    	/*
+    	 * Leet-code 74
+    	 */
+    	int m = matrix.length, n = matrix[0].length;
+		int left = 0, right = m * n - 1;
+		
+		while (left <= right) {
+			int mid = (left + right) / 2;
+			int midx = mid / n;
+			int midy = mid % n;
+			
+			int current = matrix[midx][midy];
+			
+			if (current == target)
+				return true;
+			
+			else if (current > target)
+				right = mid-1;
+			else
+				left = mid+1;
+		}
+    	
+    	return false;
+    }
+    
+    public static int peakElement(int[] nums) {
+    	/*
+    	 * Leet-code 162
+    	 */
+    	int left = 0;
+    	int right = nums.length-1;
+    	
+    	while (left <= right) {
+    		int mid = (right+left)/2;
+    		int n = nums[mid];
+    		
+    		if (mid == 0 && nums[mid+1] < n)
+    			return mid;
+    		if (mid == nums.length-1 && nums[mid-1] < n)
+    			return mid;
+    		if (mid > 0 && mid < nums.length-1 && n > nums[mid-1] && n > nums[mid+1])
+    			return mid;
+    		
+    		if (n < nums[mid+1])
+    			left = mid+1;
+    		else
+    			right = mid-1;
+    	}
+    	
+    	return -1;
+    }
+
+	
     public static int findMin(int[] nums) {
     	/*
     	 * Leet-code 153 (Medium)
