@@ -23,6 +23,42 @@ public class DynammicPro {
 //		System.out.println(steps);
 	}
 	
+	public static class Pair {
+	    int first, second;
+
+	    public Pair(int first, int second) {
+	        this.first = first;
+	        this.second = second;
+	    }
+	  }
+
+	  public static int BracketCombinations(int num) {
+	    HashMap<Pair, Integer> map = new HashMap<>();
+	    return recurse(num, 0, 0, map);
+	  }
+
+	  public static int recurse(int num, int open_count, int close_count, 
+	                            HashMap<Pair, Integer> memo) {
+
+	    Pair p = new Pair(open_count, close_count);
+	    if (memo.containsKey(p))
+	      return memo.get(p);
+
+	    if (open_count == close_count && close_count == num)
+	      return 1;
+
+	    if (open_count > num || close_count > open_count)
+	      return 0;
+
+	    int output1 = recurse(num, open_count + 1, close_count, memo);
+	    int output2 = recurse(num, open_count, close_count + 1, memo);
+
+	    int total = output1 + output2;
+	    memo.put(p, total);
+
+	    return total;
+	 }
+	
 	public static boolean wordbreakT(String s, String[] wordDict) {
 		Boolean[] memo = new Boolean[s.length()+1];
 		for (int i = 0; i < memo.length; i++) {
