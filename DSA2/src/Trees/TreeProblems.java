@@ -1,6 +1,8 @@
 package Trees;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -9,24 +11,154 @@ import java.util.Stack;
 public class TreeProblems {
 	public static void main(String[] args) {
 		TreeNode root = buildTree();
-		 List<Integer> list = preorderTraaversalLoop(root);
-		for (int n : list) {
-			System.out.print(n + " ");
+		List<List<Integer>> list = levelOrder(root);
+		for (List<Integer> n : list) {
+			for (int i : n) {
+				System.out.print(i + " ");
+			}
+			System.out.println();
 		}
-		
 	}
 	
-	public static class TreeNode {
-		int val;
-		TreeNode right;
-		TreeNode left;
+	public static TreeNode invertTree(TreeNode root) {
+		/*
+		 * Leet-code 226
+		 */
+		if (root == null) return root;
 		
-		TreeNode() {};
-		TreeNode(int val) {this.val = val;}
-		TreeNode(int val, TreeNode left, TreeNode right) {
-			this.val = val;
-			this.left = left;
-			this.right = left;
+		invertTree(root.right);
+		invertTree(root.left);
+		
+		TreeNode left_tree = root.left;
+		root.left = root.right;
+		root.right = left_tree;
+		
+		return root;
+	}
+	
+	public static boolean isSame(TreeNode p, TreeNode q) {
+		/*
+		 * Leet-code 100
+		 */
+		if (p == null || q == null) return p == q;
+		if (p.val != q.val) return false;
+		
+		return isSame(p.left, q.left) && isSame(p.right, q.right);
+	}
+	
+	public static int maxDepth(TreeNode root) {
+		/*
+		 * Leet-code 104
+		 */
+		if (root == null) return 0;
+
+        int height = Math.max(maxDepth(root.left), maxDepth(root.right)) + 1;
+        return height;
+	}
+	
+	public static List<List<Integer>> levelOrder(TreeNode root) {
+		/*
+		 * Leet-code 102 (Medium)
+		 */
+		if (root == null) return new ArrayList<>();
+		
+		/*
+		 * This is a BFS approach as BFS does level by level traversal.
+		 * We will use a Queue where we will push the current children
+		 * of the node and start processing them level by level.
+		 */
+		Deque<TreeNode> levels = new ArrayDeque<>();
+		List<List<Integer>> levelorder = new ArrayList<>();
+		levels.add(root); // Add the root to start the process
+
+		while (!levels.isEmpty()) {
+			/*
+			 * We will loop Queue's size of times because that is how 
+			 * many nodes this current level has and we will add all
+			 * of their children to queue to process the next level.
+			 */
+		    int levelsize = levels.size();  // Key insight!
+		    List<Integer> lev = new ArrayList<>();
+		    
+		    for (int i = 0; i < levelsize; i++) {
+		    	/*
+		    	 * Process the popped node, add its value to the list, and 
+		    	 * see if this has a left/right children, push them on the queue.
+		    	 */
+		        TreeNode node = levels.pollFirst();
+		        lev.add(node.val);
+		        if (node.left != null) levels.add(node.left);
+		        if (node.right != null) levels.add(node.right);
+		    }
+		    
+		    // After we have added all the level's node, add the list to levels list.
+		    levelorder.add(lev);
+		}
+		return levelorder;
+	}
+	
+	public static List<Integer> postorderTraversalLoop(TreeNode root) {
+		/*
+		 * Leet-code 145 (Iterative Solution)
+		 */
+		/*
+		 * In this iterative solution for post-order traversal, we will
+		 * use a visited node that will keep track of any node we have
+		 * already added so far in the list. The idea is the same as 
+		 * pre-order traversal but here we will not push the right child,
+		 * but just check if its not visited, then we move the walker to it.
+		 */
+		Stack<TreeNode> st = new Stack<>();
+		List<Integer> traversal = new ArrayList<>();
+		TreeNode walker = root;
+		TreeNode visitedNode = null;
+		while (!st.isEmpty() || walker != null) {
+			if (walker == null) {
+				/*
+				 * Here we will check to see if our walker is null, if it is
+				 * that means we don't have left children anymore, and we will
+				 * check if top of the stack has a right child and its not visited,
+				 * if its not, move the walker to the right child as it makes sense
+				 * in post-order traversal, else we pop the stack and move the walker to top.
+				 */
+				TreeNode topNode = st.peek();
+				if (topNode.right != null && topNode.right != visitedNode) {
+					walker = topNode.right;
+				} else {
+					st.pop();
+					traversal.add(topNode.val);
+					visitedNode = topNode;
+				}
+			} else {
+				/*
+				 * Else we just push the current node and move the walker to left child.
+				 */
+				st.push(walker);
+				walker = walker.left;
+			}
+		}
+		return traversal;
+	}
+
+	
+	public static List<Integer> postorderTraversal(TreeNode root) {
+		List<Integer> traversal = new ArrayList<>();
+		postorderTraversal(root, traversal);
+		return traversal;
+	}
+	
+	public static void postorderTraversal(TreeNode root, List<Integer> traversal) {
+		/*
+		 * Leet-code 145
+		 */
+		/*
+		 * Post-order traversal is left -> right -> root.
+		 * Call the function recursively in that order.
+		 */
+		if (root != null) {
+			postorderTraversal(root.left, traversal);
+			postorderTraversal(root.right, traversal);
+			traversal.add(root.val);
 		}
 	}
 	
@@ -138,7 +270,7 @@ public class TreeProblems {
 	}
 	
 	public static TreeNode buildTree() {
-        Integer[] values = {1, 2, 3, 4, 5, null, 8, null, null, 6, 7, 9};
+        Integer[] values = {3,9,20,null,null,15,7};
 
         if (values.length == 0 || values[0] == null) return null;
 
@@ -168,5 +300,20 @@ public class TreeProblems {
 
         return root;
     }
+	
+	
+	public static class TreeNode {
+		int val;
+		TreeNode right;
+		TreeNode left;
+		
+		TreeNode() {};
+		TreeNode(int val) {this.val = val;}
+		TreeNode(int val, TreeNode left, TreeNode right) {
+			this.val = val;
+			this.left = left;
+			this.right = left;
+		}
+	}
 
 }
