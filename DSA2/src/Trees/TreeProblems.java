@@ -26,6 +26,8 @@ public class TreeProblems {
 		/*
 		 * Leet-code 124
 		 */
+		// Driver method for path sum where we are updating the
+		// the global_max at each recursive call.
 		global_max = Integer.MIN_VALUE;
 		maxPathSum(root);
 		return global_max;
@@ -34,11 +36,16 @@ public class TreeProblems {
 	public static int maxPathHelper(TreeNode root) {
 		if (root == null) return 0;
 		
+		/*
+		 * Get the max values for both left and right subtrees
+		 * and see which one is bigger to take for next call.
+		 * If they return -ve values, just put zero for convenience.
+		 */
 		int leftval = Math.max(0, maxPathHelper(root.left));
 		int rightval = Math.max(0, maxPathHelper(root.right));
 		
 		/*
-		 * Option 1: Don't extend the path
+		 * Option 1: Don't extend the path, take both children values.
 		 */
 		int not_extend = root.val + leftval + rightval;
 		global_max = Math.max(not_extend, global_max);
@@ -53,12 +60,16 @@ public class TreeProblems {
 		/*
 		 * Leet-code 112
 		 */
+		// Base case is if we have fallen off the tree, that means no targetSum found.
 		if (root == null) return false;
+		// This says that if we are at a leaf, and we have found target sum, return true.
         if (root.left == null && root.right == null && targetSum - root.val == 0) return true;
-
+        	
+        // Here, we recurse on both left and right subtrees to find the target sum.
         boolean left = hasPathSum(root.left, targetSum - root.val);
         boolean right = hasPathSum(root.right, targetSum - root.val);
-
+        
+        // OR is being used because if any of them return true, we're good.
         return left || right;
 	}
 	
@@ -66,11 +77,21 @@ public class TreeProblems {
 		/*
 		 * Leet-code 226
 		 */
+		// Base case, If we have fell of the tree, just return root.
 		if (root == null) return root;
 		
+		/*
+		 * Here we are inverting the right subtree and left subtree.
+		 * Which will go all the way to the leaves and start inverting
+		 * on its way back up by the code we wrote below.
+		 */
 		invertTree(root.right);
 		invertTree(root.left);
-		
+		/*
+		 * Here, it simple is swapping the both children, bear in mind
+		 * swapping the nodes, not the values. If we swap only values,
+		 * that would not carry over the children with the subtrees.
+		 */
 		TreeNode left_tree = root.left;
 		root.left = root.right;
 		root.right = left_tree;
@@ -81,6 +102,13 @@ public class TreeProblems {
 	public static boolean isSame(TreeNode p, TreeNode q) {
 		/*
 		 * Leet-code 100
+		 */
+		/*
+		 * Simple recursion, where our base case is if any of
+		 * the nodes became null, we just return p == q, which will
+		 * check if they were the same. And if both nodes were 
+		 * different, we just return false. And at the end return
+		 * the recursive call of left and right subtrees of both trees.
 		 */
 		if (p == null || q == null) return p == q;
 		if (p.val != q.val) return false;
