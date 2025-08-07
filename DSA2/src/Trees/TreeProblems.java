@@ -20,6 +20,48 @@ public class TreeProblems {
 		}
 	}
 	
+	private static int global_max;
+	
+	public static int maxPathSum(TreeNode root) {
+		/*
+		 * Leet-code 124
+		 */
+		global_max = Integer.MIN_VALUE;
+		maxPathSum(root);
+		return global_max;
+	}
+	
+	public static int maxPathHelper(TreeNode root) {
+		if (root == null) return 0;
+		
+		int leftval = Math.max(0, maxPathHelper(root.left));
+		int rightval = Math.max(0, maxPathHelper(root.right));
+		
+		/*
+		 * Option 1: Don't extend the path
+		 */
+		int not_extend = root.val + leftval + rightval;
+		global_max = Math.max(not_extend, global_max);
+		/*
+		 * Option 2: Take bigger child's value and extend the path
+		 */
+		int extend = root.val + Math.max(rightval, leftval);
+		return extend;
+	}
+	
+	public static boolean hasPathSum(TreeNode root, int targetSum) {
+		/*
+		 * Leet-code 112
+		 */
+		if (root == null) return false;
+        if (root.left == null && root.right == null && targetSum - root.val == 0) return true;
+
+        boolean left = hasPathSum(root.left, targetSum - root.val);
+        boolean right = hasPathSum(root.right, targetSum - root.val);
+
+        return left || right;
+	}
+	
 	public static TreeNode invertTree(TreeNode root) {
 		/*
 		 * Leet-code 226
