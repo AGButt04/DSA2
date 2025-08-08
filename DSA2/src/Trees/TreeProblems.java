@@ -2,6 +2,7 @@ package Trees;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,77 @@ public class TreeProblems {
 			System.out.println();
 		}
 	}
+	
+	public class Codec {
+		/*
+		 * Leet-code 297 (Hard)
+		 */
+	    // Encodes a tree to a single string.
+	    public String serialize(TreeNode root) {
+	        StringBuilder sb = new StringBuilder();
+	        serialize(root, sb);
+	        return sb.toString();
+	    }
+	    public void serialize(TreeNode root, StringBuilder sb) {
+	        if (root == null)
+	            sb.append("null,");
+	        else {
+	            sb.append(root.val).append(",");
+	            serialize(root.left, sb);
+	            serialize(root.right, sb);
+	        }
+	    }
+	   
+	    // Decodes your encoded data to tree.
+	    
+	    public TreeNode deserialize(String data) {
+	        Queue<String> queue = new LinkedList<>(Arrays.asList(data.split(",")));
+	        return deserialize(queue);
+	    }
+	    public TreeNode deserialize(Queue<String> queue) {
+	        String val = queue.poll();
+	        if (val.equals("null")) return null;
+
+	        TreeNode root = new TreeNode(Integer.parseInt(val));
+	        root.left = deserialize(queue);
+	        root. right = deserialize(queue);
+	        return root;
+	    }
+	}
+	
+	public static TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+		/*
+		 * Leet-code 236 (Medium)
+		 */
+		if (root == null || root == p || root == q) return root;
+		
+		TreeNode left = lowestCommonAncestor(root.left, p , q);
+		TreeNode right = lowestCommonAncestor(root.right, p, q);
+		
+		if (left != null && right != null) return root;
+		
+		return (left != null)? left : right;
+		
+	}
+	
+	public boolean isValidBST(TreeNode root) {
+		/*
+		 * Leet-code 98 (Medium)
+		 */
+        return validate(root, null, null);
+    }
+
+    public static boolean validate(TreeNode root, Integer min, Integer max) {
+        if (root == null) return true;
+
+        if (min != null && min >= root.val || max != null && max <= root.val)
+            return false;
+
+        boolean lefttree = validate(root.left, min, root.val);
+        boolean righttree = validate(root.right, root.val, max);
+
+        return lefttree && righttree;
+    }
 	
 	private static int global_max;
 	
