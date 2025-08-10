@@ -1,18 +1,43 @@
 package Graphs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Stack;
+import Trees.TreeProblems.TreeNode;
+
+import java.util.*;
 
 public class DFS {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+        TreeNode root = buildTree();
+        int targetSum = 8;
+        System.out.println(pathSum(root, targetSum));
 
-	}
+    }
+
+    public static int pathSum(TreeNode root, int targetsum) {
+        /*
+        Leet-code 467 (Medium)
+         */
+        HashMap<Integer, Integer> prefix_sums = new HashMap<>();
+        prefix_sums.put(0, 1);
+        int count = DFS(root, targetsum, prefix_sums, 0);
+        return count;
+    }
+
+    public static int DFS(TreeNode root, int targetsum, HashMap<Integer, Integer> prefix_sums, int runningSum) {
+        if (root == null) return 0;
+
+        runningSum += root.val;
+        int pathCount = prefix_sums.getOrDefault(runningSum-targetsum, 0);
+
+        prefix_sums.put(runningSum, prefix_sums.getOrDefault(runningSum, 0) + 1);
+
+        pathCount += DFS(root.left, targetsum, prefix_sums, runningSum);
+        pathCount += DFS(root.right, targetsum, prefix_sums, runningSum);
+
+        prefix_sums.put(runningSum, prefix_sums.get(runningSum)-1);
+
+        return pathCount;
+    }
 	
 	public static Node cloneGraph(Node node) {
 		/*
@@ -168,6 +193,38 @@ public class DFS {
 	        neighbors = _neighbors;
 	    }
 	}
+
+    public static TreeNode buildTree() {
+        Integer[] values = {10,5,-3,3,2,null,11,3,-2,null,1};
+
+        if (values.length == 0 || values[0] == null) return null;
+
+        TreeNode root = new TreeNode(values[0]);
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        int i = 1;
+
+        while (i < values.length) {
+            TreeNode current = queue.poll();
+
+            // Left child
+            if (i < values.length && values[i] != null) {
+                current.left = new TreeNode(values[i]);
+                queue.offer(current.left);
+            }
+            i++;
+
+            // Right child
+            if (i < values.length && values[i] != null) {
+                current.right = new TreeNode(values[i]);
+                queue.offer(current.right);
+            }
+            i++;
+        }
+
+        return root;
+    }
 	
 	public static class Tuple {
 		private int x;

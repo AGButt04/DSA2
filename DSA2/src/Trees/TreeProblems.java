@@ -445,12 +445,12 @@ public class TreeProblems {
 	
 	
 	public static class TreeNode {
-		int val;
-		TreeNode right;
-		TreeNode left;
+		public int val;
+		public TreeNode right;
+		public TreeNode left;
 		
 		TreeNode() {};
-		TreeNode(int val) {this.val = val;}
+		public TreeNode(int val) {this.val = val;}
 		TreeNode(int val, TreeNode left, TreeNode right) {
 			this.val = val;
 			this.left = left;
