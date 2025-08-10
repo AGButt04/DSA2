@@ -13,6 +13,49 @@ public class DFS {
 
     }
 
+    public static int maxAreaofIsland(char[][] grid) {
+        /*
+         * Leet-code 695
+         */
+        /*
+        This problem is the same as numIslands, but instead here we are counting
+        how many 1s are in an adjacent islands, which will be counted as its area,
+        at the end we are just returning the biggest island with largest area.
+         */
+        Stack<Tuple> stack = new Stack<>();
+        HashSet<Tuple> visited = new HashSet<>();
+        int maxislands = 0;
+        /*
+         * We will scan the grid for potential ones which are the 1s.
+         */
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid.length; j++) {
+                if (grid[i][j] == '0')
+                    continue;
+
+                Tuple current = new Tuple(i, j);
+                if (visited.contains(current))
+                    continue;
+                int currArea = 1;
+                stack.push(current);
+                visited.add(current);
+                while (!stack.isEmpty()) {
+                    Tuple popped = stack.pop();
+                    List<Tuple> neigbors = getNeighbors(grid, popped);
+                    for (Tuple neighbor : neigbors) {
+                        if (!visited.contains(neighbor)) {
+                            stack.push(neighbor);
+                            visited.add(neighbor);
+                            currArea += 1;
+                        }
+                    }
+                }
+                maxislands = Math.max(maxislands, currArea);
+            }
+        }
+        return maxislands;
+    }
+
     public static int pathSum(TreeNode root, int targetsum) {
         /*
         Leet-code 467 (Medium)
