@@ -13,6 +13,68 @@ public class DFS {
 
     }
 
+    public boolean exist(char[][] board, String word) {
+        /*
+        Leet-code 79
+         */
+        /*
+        In this problem, we are supposed to check if the word given exists in the mXn grid.
+        This could be done iteratively but that would be too complex to implement as it
+        requires backtracking and recursion does the backtracking automatically for us.
+         */
+        int m = board.length;
+        int n = board[0].length;
+        /*
+        The idea here is that we will scan through the grif and will call the DFS method which is
+        a recursive method on each position, and if this method returns true, we will return true,
+        as that means that word can be found from this position on. The main logic is the DFS.
+         */
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (DFS(board, i , j, 0, word)) {
+                    return true;
+                }
+            }
+        }
+        // If no call returned true, that means it cannot be formed, so return false.
+        return false;
+    }
+
+    public static boolean DFS(char[][] board, int x, int y, int index, String word) {
+        /*
+        Helper method for leet-code 79
+         */
+        /*
+        This method performs DFS recursively, from the current position for all 4 adjacent directions.
+        The base case would be if our index which keeps track of which character we are on of the word,
+        if that reaches end of the word, that means we have found the word, so return true.
+         */
+        if (index == word.length()) return true;
+        /*
+        This condition has all scenarios where word cannot be formed, that if the coordinates aere out
+        of bounds of if the current character is not equal to the character if the word we are looking for.
+         */
+        if (x < 0 || x >= board.length || y < 0 || y >= board[0].length || word.charAt(index) != board[x][y])
+            return false;
+        /*
+        This is the main logic, where we temporarily store the current position's value and put #
+        there just to indicate that its visited, and we will recurse in each direction from this
+        point on with the index incremented by one, to look for thr remaining characters. And if
+        any of these 4 calls return true that means that word can be formed in that direction.
+         */
+        char temp = board[x][y];
+        board[x][y] = '#';
+        boolean found = DFS(board, x, y+1, index+1, word) ||
+                DFS(board, x+1, y, index+1, word) ||
+                DFS(board, x, y-1, index+1, word) ||
+                DFS(board, x-1, y, index+1, word);
+
+        // For backtracking, we put the character back when we return from all the calls
+        board[x][y] = temp;
+        // And, just return found variable which would be false only if all calls returned false.
+        return found;
+    }
+
     public static int maxAreaofIsland(char[][] grid) {
         /*
          * Leet-code 695
