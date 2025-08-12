@@ -13,6 +13,62 @@ public class DFS {
 
     }
 
+    public boolean isSymmetric(TreeNode root) {
+        /*
+        Leet-code 101
+         */
+        if (root == null) return true;
+        return isMirror(root.left, root.right);
+    }
+
+    public boolean isMirror(TreeNode left, TreeNode right) {
+        /*
+        Helper for leet-code 101
+         */
+        if (left == null && right == null) return true;
+
+        if (left == null || right == null) return false;
+
+        if (left.val != right.val) return false;
+
+        return isMirror(left.left, right.right) && isMirror(left.right, right.left);
+    }
+
+    public static boolean validPath(int n, int[][] edges, int source, int destination) {
+        /*
+        Leet-code 1971.
+         */
+        Stack<Integer> st = new Stack<>();
+        HashSet<Integer> visited = new HashSet<>();
+        List<List<Integer>> graph = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            graph.add(new ArrayList<>());
+        }
+
+        for (int[] edge : edges) {
+            int vertex = edge[0];
+            int neighbor = edge[1];
+            graph.get(vertex).add(neighbor);
+            graph.get(neighbor).add(vertex);
+        }
+
+        st.push(source);
+        visited.add(source);
+        while (!st.isEmpty()) {
+            int curr = st.pop();
+            if (curr == destination) return true;
+            List<Integer> neighbors = graph.get(curr);
+            for (int neighbor : neighbors) {
+                if (!visited.contains(neighbor)) {
+                    st.push(neighbor);
+                    visited.add(neighbor);
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean exist(char[][] board, String word) {
         /*
         Leet-code 79
