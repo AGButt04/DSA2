@@ -9,8 +9,163 @@ public class DFS {
 	public static void main(String[] args) {
         TreeNode root = buildTree();
         int targetSum = 8;
-        System.out.println(pathSum(root, targetSum));
+        int[][] graph = {{4,3,1},{3,2,4},{3},{4},{}};
+        List<List<Integer>> res = allPaths(graph);
+        for (List<Integer> l : res){
+            for (Integer i : l){
+                System.out.print(i+" ");
+            }
+            System.out.println();
+        }
+    }
 
+    public static List<List<Integer>> allPaths(int[][] graph) {
+        /*
+        lEET-CODE 797 (Recursive Solution)
+         */
+        /*
+        This is a recursive solution for the allpaths problem, where idea is the same,
+        but this one is more cleaner and alittle faster. Here, we also create a new initial
+        path, and add 0 to it, and we give the paths, and path to the call with the target = graph.length-1.
+         */
+        List<List<Integer>> paths = new ArrayList<>();
+        ArrayList<Integer> path = new ArrayList<>();
+        int target = graph.length-1;
+        path.add(0);
+        DFS_paths(graph, paths, path, 0, target);
+        return paths;
+    }
+    public static void DFS_paths(int[][] graph, List<List<Integer>> paths, ArrayList<Integer> path, int curr, int target) {
+        /*
+        Helper for recursive allPaths.
+        This method check if the current node/element is the same as the target meaning last value,
+        if yes, then it creates a new ArrayList, and copies this path and add it to paths and return the call.
+         */
+        if (curr==target){
+            paths.add(new ArrayList<>(path));
+            return;
+        }
+        /*
+        Else, we get the neighbors for the current element, which is the last element in the path,
+        and go into the neighbors, we add the neighbor to our current path and calls the function
+        again to explore this path now, which will explore this path to the end, and when the
+        call returns, we can just remove this neighbor from the path (backtrack), and keep on doing
+        the same steps for the other neighbors, and this process will eventually find all paths.
+         */
+        int[] neighbors = graph[curr];
+        for (int n : neighbors) {
+            path.add(n);
+            DFS_paths(graph, paths, path, n, target);
+            path.remove(path.size()-1);
+        }
+    }
+
+    public int[][] floodFill(int[][] image, int sr, int sc, int color) {
+        /*
+        Leet-code 733
+        This problem also uses DFS, as the approach here is that we start the DFS from the
+        sr, sc coordinates given, change its value to color value given, and start exploring
+        its neighbors, and each adjacent neighbor with the same value as starting point also gets changed.
+         */
+        // If the starting position element is already color, then no need to progress, just return.
+        if (image[sr][sc] == color) return image;
+        /*
+        Here, we will use a stack and visited set, we will create tuples of indexes, and push them onto the
+        stack and visited set, and push the (sr,sc) tuple and start the process and save its original value
+        as that will be used to compare with its neighbors to add.
+         */
+        Stack<Tuple> st = new Stack<>();
+        HashSet<Tuple> visited = new HashSet<>();
+        Tuple start = new Tuple(sr, sc);
+        int c = image[sr][sc];
+        st.push(start);
+        visited.add(start);
+
+        while (!st.isEmpty()) {
+            /*
+            Pop the current coordinate, update its value with the color value given, and get its neighbors from the
+            getneighbors method written, which will return the list of tuple coordinate, which are valid, meaning
+            in range and with same values as origin value, we'll add them to visited set and stack if not pushed before.
+             */
+            Tuple current = st.pop();
+            image[current.x][current.y] = color;
+            List<Tuple> neighbors = getNeighbors(image, current, c);
+            for (Tuple t : neighbors) {
+                if (!visited.contains(t)) {
+                    st.push(t);
+                    visited.add(t);
+                }
+            }
+        }
+        // return the updated image.
+        return image;
+    }
+    public static List<Tuple> getNeighbors(int[][] image, Tuple curr, int c) {
+        /*
+        This is a typical getneighbors method, but here we also check if the
+        value of the neighbor is equal to the original value (c) given.
+         */
+        int[][] directions = {{1,0}, {0,1}, {-1,0}, {0,-1}};
+        List<Tuple> neighbors = new ArrayList<>();
+        for (int[] dir : directions) {
+            int dx = dir[0] + curr.x;
+            int dy = dir[1] + curr.y;
+
+            if ((dx >= 0 && dx < image.length) && (dy >= 0 && dy < image[0].length)) {
+                if (image[dx][dy] == c) {
+                    Tuple n = new Tuple(dx, dy);
+                    neighbors.add(n);
+                }
+            }
+        }
+        return neighbors;
+    }
+
+    public List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        /*
+        Leet-code 797
+        In this problem, we are finding all the possible paths from the node 0 to the
+        last node which is the length of the graph - 1. For this, we will use a simple
+        DFS approach, in which we will use a Stack, and because this graph is a Directed
+        Acyclic Graph (DAG), we don't need a visited set, as there are no cycles.
+         */
+        /*
+        For this problem, stack will not store the nodes, but the whole paths, which will
+        be explored all the way throughout the loop, and when it ends, we explore another.
+         */
+        int target = graph.length-1;
+        List<List<Integer>> paths = new ArrayList<>();
+        Stack<ArrayList<Integer>> st = new Stack<>();
+        /*
+        Creating a new List, and adding 0 to it as all the paths will start from 0. The idea
+        is that this path will be explored by its neighbors, and added again as a new one, so we push it.
+         */
+        ArrayList<Integer> currPath = new ArrayList<>();
+        currPath.add(0);
+        st.push(currPath);
+
+        while (!st.isEmpty()) {
+            /*
+            This main loop pops the current path from the stack and retrieve its last element as that element's
+            neighbors will be explored next, and we check if that element is the target, if not, we get its neighbors
+            from the graph. Then we go into its neighbors, and copy the current path and create neighbor num of new
+            paths and push onto the stack as there will be neighbor number of possibilities for exploring at each step.
+             */
+            ArrayList<Integer> curr = st.pop();
+            int lastelem = curr.get(curr.size()-1);
+            if (lastelem == target) {
+                // If we found the target then we create the new Arraylist, copy the current path and add to paths.
+                paths.add(curr);
+            }
+            int[] neighbors = graph[lastelem];
+            for (int n : neighbors) {
+                ArrayList<Integer> newPath = new ArrayList<>(curr);
+                // We create the new path, add current neighbor to it and push this new path to the stack to be explored next.
+                newPath.add(n);
+                st.push(newPath);
+            }
+        }
+        return paths;
     }
 
     public boolean isSymmetric(TreeNode root) {
