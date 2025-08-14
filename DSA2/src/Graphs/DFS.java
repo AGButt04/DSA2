@@ -9,14 +9,131 @@ public class DFS {
 	public static void main(String[] args) {
         TreeNode root = buildTree();
         int targetSum = 8;
-        int[][] graph = {{4,3,1},{3,2,4},{3},{4},{}};
-        List<List<Integer>> res = allPaths(graph);
-        for (List<Integer> l : res){
-            for (Integer i : l){
-                System.out.print(i+" ");
+        int[][] graph = {{1},{2},{3},{}};
+        List<List<Integer>> res = new ArrayList<>();
+        for (int i = 0; i < graph.length; i++) {
+            ArrayList<Integer> temp = new ArrayList<>();
+            for  (int j = 0; j < graph[i].length; j++) {
+                temp.add(graph[i][j]);
             }
-            System.out.println();
+            res.add(temp);
         }
+        System.out.println(canVisitAllRooms(res));
+    }
+
+    public static boolean canVisitAllRooms(List<List<Integer>> rooms) {
+        /*
+        Leet-code 841
+        This is a classic DFS problem where are trying to see if we can visit
+        all the rooms with the key we have in the rooms. Here we will use simple
+        DFS with stack and visited set, and start with the 0, as that room is open.
+         */
+        Stack<Integer> stack = new Stack<>();
+        HashSet<Integer> visited = new HashSet<>();
+        stack.push(0);
+        visited.add(0);
+
+        while (!stack.isEmpty()) {
+            /*
+            We'll keep on looping until stack is empty as always, and we will
+            get the current room which is pushed onto the stack and get the keys
+            in that room which are located in the room 2D list given at the index
+            room, simply we will loop over the keys and push into the visited set.
+             */
+            int curr_room = stack.pop();
+            List<Integer> curr_keys = rooms.get(curr_room);
+            for (int key : curr_keys) {
+                if (!visited.contains(key)) {
+                    stack.push(key);
+                    visited.add(key);
+                }
+            }
+        }
+        /*
+        If we found all the keys, then length of rooms list should be
+        equal to the visited set meaning visited all rooms, if not then
+        that means we are missing a key, and hence we will return false.
+         */
+        return rooms.size() == visited.size();
+    }
+    public static class Employee {
+        int id;
+        int importance;
+        List<Integer> subordinates;
+        public Employee(int id, int importance, String name) {
+            this.id = id;
+            this.importance = importance;
+            this.subordinates = new ArrayList<>();
+        }
+    }
+    public static int getImportance(List<Employee> employees, int id) {
+        /*
+        Leet-code 690
+        In this problem, we are getting the importance of the given employee, by adding
+        all its direct and indirect subordinates' importances, and we can use DFS for that
+        with HashMap, which will store the id's of employee's mapped to the employee object.
+         */
+        Stack<Integer> st = new Stack<>();
+        HashMap<Integer, Employee> subs = new HashMap<>();
+        int importance = 0;
+        // push the id of the main person
+        st.push(id);
+        /*
+        First we will populate the hashmap, by adding all the employee ID's
+        as keys and their values will be their employee objects for O(1) retrieval.
+         */
+        for (Employee emp : employees) {
+            subs.put(emp.id, emp);
+        }
+
+        while (!st.isEmpty()) {
+            /*
+            Then we will do typical DFS by popping the stack which contains the ID's of
+            employees and to get the list of their subordinates, we will need the actual
+            employee object which is stored in the map, we'll get it and push their ID's to stack
+             */
+            int curr_id = st.pop();
+            Employee curr_emp = subs.get(curr_id);
+            importance += curr_emp.importance; // add each popped employee's importance.
+            List<Integer> subord = curr_emp.subordinates;
+            for (int s : subord) {
+                st.push(s);
+            }
+        }
+        return importance;
+    }
+
+    public static List<String> binaryTreePaths(TreeNode root) {
+        /*
+        Leet-code 257
+        To get all the paths in string format, we will use recursive DFS.
+        Create a list of string paths, and if root != null, call the function.
+         */
+        List<String> paths = new ArrayList<>();
+        if (root != null) {
+            DFS_tree(paths, "", root);
+        }
+        return paths;
+    }
+    public static void DFS_tree(List<String> paths, String path, TreeNode root) {
+        /*
+        In this function we see if the node given is a leaf or not, if yes then
+        we will add its value to the current path of the recursive call, and add
+        the path without "->" to the paths list and return the call back.
+         */
+        if  (root.left == null && root.right == null) {
+            path += root.val;
+            paths.add(path);
+            return;
+        }
+        /*
+        Else we create a new current path by copying the older path, adding the
+        value of the current node and "->" to create the String, and then we
+        will perform two recursive calls on the left subtree and rightsubtree.
+         */
+        String currentPath = path + root.val + "->";
+        if (root.left != null) DFS_tree(paths, currentPath, root.left);
+        if (root.right != null) DFS_tree(paths, currentPath, root.right);
     }
 
     public static List<List<Integer>> allPaths(int[][] graph) {
