@@ -7,7 +7,8 @@ import java.util.*;
 public class DFS {
 
 	public static void main(String[] args) {
-        TreeNode root = buildTree();
+        Integer[] arr = {10,5,-3,3,2,null,11,3,-2,null,1};
+        TreeNode root = buildTree(arr);
         int targetSum = 8;
         int[][] graph = {{1},{2},{3},{}};
         List<List<Integer>> res = new ArrayList<>();
@@ -627,8 +628,8 @@ public class DFS {
 	    }
 	}
 
-    public static TreeNode buildTree() {
-        Integer[] values = {10,5,-3,3,2,null,11,3,-2,null,1};
+    public static TreeNode buildTree(Integer[] val) {
+        Integer[] values = val ;
 
         if (values.length == 0 || values[0] == null) return null;
 
@@ -660,8 +661,8 @@ public class DFS {
     }
 	
 	public static class Tuple {
-		private int x;
-		private int y;
+		public int x;
+		public int y;
 		public Tuple(int x, int y) {
 			this.x = x;
 			this.y = y;
