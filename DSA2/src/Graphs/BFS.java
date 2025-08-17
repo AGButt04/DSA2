@@ -16,6 +16,69 @@ public class BFS {
         }
     }
 
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        /*
+        Leet-code 210
+         */
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        Deque<Integer> queue = new ArrayDeque<>();
+        int[] indegree = new int[numCourses];
+        int[] ordering = new int[numCourses];
+        int index = 0;
+
+        for (int i  = 0; i < numCourses; i++) {
+            map.put(i, new ArrayList<>());
+            indegree[i] = 0;
+        }
+        for (int[] prereq : prerequisites) {
+            int course  = prereq[0];
+            int pre = prereq[1];
+            map.get(course).add(pre);
+            indegree[pre]++;
+        }
+        for (int i = 0; i < numCourses; i++) {
+            if (indegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            ordering[index++] = course;
+            for (int prereq : map.get(course)) {
+                indegree[prereq]--;
+                if (indegree[prereq] == 0) {
+                    queue.offer(prereq);
+                }
+            }
+        }
+        return index == numCourses ? ordering : new int[0];
+    }
+
+    public static List<List<Integer>> levelOrder(Node root) {
+        /*
+        Leet-code 429 (Medium)
+         */
+        List<List<Integer>> res = new ArrayList<>();
+        Deque<Node> queue = new ArrayDeque<>();
+        queue.offer(root);
+
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            List<Integer> list = new ArrayList<>();
+            for (int i = 0; i < levelSize; i++) {
+                Node curr = queue.poll();
+                list.add(curr.val);
+                List<Node> children = curr.children;
+
+                for (Node child : children) {
+                    queue.offer(child);
+                }
+            }
+            res.add(list);
+        }
+        return res;
+    }
+
     public int[][] updateMatrix(int[][] mat) {
         /*
         Leet-code 542
@@ -336,5 +399,22 @@ public class BFS {
             i++;
         }
         return root;
+    }
+
+    static class Node {
+        public int val;
+        public List<Node> children;
+
+        public Node() {
+        }
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, List<Node> _children) {
+            val = _val;
+            children = _children;
+        }
     }
 }
