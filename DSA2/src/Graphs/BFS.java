@@ -14,6 +14,51 @@ public class BFS {
         }
     }
 
+    public int numSquares(int n) {
+        /*
+        Leet-code 279
+        In this problem, we are finding minimum number of perfect squares
+        that sum upto target, and we can use BFS for that. The idea is
+        to push the target on the queue, and start subtracting all the
+        perfect squares and add them back into the queue, to process later.
+         */
+        Deque<Integer> queue = new LinkedList<>();
+        HashSet<Integer> visited = new HashSet<>();
+        int minSquares = 0;
+
+        queue.offer(n);
+        visited.add(n);
+        while (!queue.isEmpty()) {
+            int level_size = queue.size();
+            /*
+            Looping level_size times, so that all the possible moves of this
+            level gets the same number of moves, when they are processed later.
+             */
+            for (int i = 0; i < level_size; i++) {
+                /*
+                Main logic is we will subtract all hthe perfect squares until we
+                get a negative value, and if any number subtracted will create a
+                0, that means these moves can sum up to n, and we just return moves+1 instantly.
+                 */
+                int current_num = queue.poll();
+                int x = 1;
+                int next_num = current_num - (int) Math.pow(x, 2);
+                while (next_num >= 0) {
+                    if (next_num == 0) return minSquares+1;
+                    if (!visited.contains(next_num)) {
+                        queue.offer(next_num);
+                        visited.add(next_num);
+                    }
+                    // Calculate again to keep the loop condition running or terminated.
+                    next_num = current_num - (int) Math.pow(++x, 2);
+                }
+            }
+            // Increment the number of squares needed after one level is processed.
+            minSquares++;
+        }
+        return minSquares;
+    }
+
     public int openLock(String[] deadends, String target) {
         /*
         Leet-code 752
