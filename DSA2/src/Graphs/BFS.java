@@ -6,14 +6,131 @@ import Graphs.DFS.Tuple;
 public class BFS {
     public static void main(String[] args) {
         Integer[] arr = {3,9,20,null,null,15,7};
+        int[][] grid = {{1,0,1},{0,0,0},{1,0,1}};
         TreeNode root = buildTree(arr);
-        List<List<Integer>> res = levelOrder(root);
-        for  (List<Integer> list : res) {
-            for (Integer integer : list) {
-                System.out.print(integer+" ");
-            }
-            System.out.println();
+        List<StringBuilder> moves = getMoves(new StringBuilder("0000"));
+        for   (StringBuilder string : moves) {
+            System.out.print(string.toString() + "| ");
         }
+    }
+
+    public int openLock(String[] deadends, String target) {
+        /*
+        Leet-code 752
+         */
+        Deque<StringBuilder> queue = new LinkedList<>();
+        HashMap<String, Integer> dead = new HashMap<>();
+        int moves = 0;
+        StringBuilder initialState = new StringBuilder("0000");
+
+        for (String s : deadends) {
+            dead.put(s, 1);
+        }
+
+        if (dead.containsKey("0000")) return -1;
+        if (initialState.toString().equals(target)) return 0;
+
+        dead.put(initialState.toString(), 1);
+        queue.offer(initialState);
+        while (!queue.isEmpty()) {
+            int level_size = queue.size();
+
+            for (int i = 0; i < level_size; i++) {
+                StringBuilder curr_state = queue.pop();
+                if (curr_state.toString().equals(target))
+                    return moves;
+
+                List<StringBuilder> new_moves = getMoves(curr_state);
+                for (StringBuilder str : new_moves) {
+                    String curr_move = str.toString();
+
+                    if (curr_move.toString().equals(target))
+                        return moves+1;
+
+                    if (!dead.containsKey(curr_move)) {
+                        dead.put(curr_move, 1);
+                        queue.offer(str);
+                    }
+                }
+            }
+            moves++;
+        }
+        return -1;
+    }
+
+    public static List<StringBuilder> getMoves(StringBuilder curr_state) {
+        /*
+        Helper for 752
+         */
+        List<StringBuilder> moves = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            StringBuilder action1 = new StringBuilder(curr_state);
+            StringBuilder action2 = new StringBuilder(curr_state);
+            int curr_number = curr_state.charAt(i) - '0';
+
+            action1.setCharAt(i, (char) ('0' + (curr_number + 1) % 10));
+            action2.setCharAt(i, (char) ('0' + (curr_number + 9) % 10));
+
+            moves.add(action1);
+            moves.add(action2);
+        }
+        return moves;
+    }
+
+    public static int maxDistance(int[][] grid) {
+        /*
+        Leet-code 1162
+         */
+        Deque<int[]> queue = new ArrayDeque<>();
+        int m = grid.length, n = grid[0].length;
+        int land = 0, water = 0;
+        int[][] distances = new int[m][n];
+        int maxDistance = 0;
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1) {
+                    queue.offer(new int[]{i, j});
+                    distances[i][j] = 0;
+                    land++;
+                } else {
+                    distances[i][j] = -1;
+                    water++;
+                }
+            }
+        }
+
+        if (land == 0 || water == 0) return -1;
+
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            int curr_distance = distances[curr[0]][curr[1]];
+            int next_distance = curr_distance + 1;
+            List<int[]> neighbors = getneighbors(distances, curr);
+            for (int[] neighbor : neighbors) {
+                int new_m = neighbor[0], new_n = neighbor[1];
+                distances[new_m][new_n] = next_distance;
+                queue.offer(new int[]{new_m, new_n});
+            }
+            maxDistance = Math.max(curr_distance, maxDistance);
+        }
+        return maxDistance;
+    }
+    public static List<int[]> getneighbors(int[][] distances, int[] pos) {
+        int[][] directions = {{0, 1}, {1, 0}, {-1, 0},{0, -1}};
+        List<int[]> neighbors = new ArrayList<>();
+
+        for (int[] dir : directions) {
+            int dx = dir[0] + pos[0];
+            int dy = dir[1] + pos[1];
+
+            if ((dx >= 0 && dx < distances.length) && (dy >= 0 && dy < distances[0].length)) {
+                if (distances[dx][dy] == -1) {
+                    neighbors.add(new int[]{dx, dy});
+                }
+            }
+        }
+        return neighbors;
     }
 
     public int[] findOrder(int numCourses, int[][] prerequisites) {
