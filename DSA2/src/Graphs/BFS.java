@@ -252,6 +252,7 @@ public class BFS {
     public static List<List<Integer>> levelOrder(Node root) {
         /*
         Leet-code 429 (Medium)
+        This is a typical BFS problem which just returns the level order of the tree.
          */
         List<List<Integer>> res = new ArrayList<>();
         Deque<Node> queue = new ArrayDeque<>();
@@ -260,13 +261,13 @@ public class BFS {
         while (!queue.isEmpty()) {
             int levelSize = queue.size();
             List<Integer> list = new ArrayList<>();
-            for (int i = 0; i < levelSize; i++) {
-                Node curr = queue.poll();
-                list.add(curr.val);
-                List<Node> children = curr.children;
+            for (int i = 0; i < levelSize; i++) { // Loop level_size amount of times
+                Node curr = queue.poll(); // Pop the children of the current level
+                list.add(curr.val); // Add them to the current level list
+                List<Node> children = curr.children; // Get their children
 
                 for (Node child : children) {
-                    queue.offer(child);
+                    queue.offer(child); // Add them to the queue to be processed later.
                 }
             }
             res.add(list);
