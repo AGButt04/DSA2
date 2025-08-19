@@ -125,40 +125,55 @@ public class BFS {
     public static int maxDistance(int[][] grid) {
         /*
         Leet-code 1162
+        This problem we are trying to find the max distance of the water cell (0)
+        from the land cell (1), and for that we can use multi-source BFS, working
+        from the edges of the matrix inward into the grid towards the zeros.
          */
         Deque<int[]> queue = new ArrayDeque<>();
         int m = grid.length, n = grid[0].length;
         int land = 0, water = 0;
+        // We will create a distances matrix which will hold the distance of each cell
+        // from the land, and the 1s will have the distance of 0 as they are land.
         int[][] distances = new int[m][n];
-        int maxDistance = 0;
+        int maxDistance = 0; // Keeping track of the maximum distance
 
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 if (grid[i][j] == 1) {
+                    // If we find a land cell, put 0 in grid and increment land cells count.
                     queue.offer(new int[]{i, j});
                     distances[i][j] = 0;
                     land++;
                 } else {
+                    // If we find water cell, increment the water count and put -1 in distances(unprocessed)
                     distances[i][j] = -1;
                     water++;
                 }
             }
         }
-
+        // If we happen to find no land or water, just return -1 (No distance)
         if (land == 0 || water == 0) return -1;
 
         while (!queue.isEmpty()) {
+            /*
+            Then we do BFS, Pop the current coordinate, get its distances from the
+            distances matrix and add 1 to it as that will be distance fror its neighbors.
+             */
             int[] curr = queue.poll();
             int curr_distance = distances[curr[0]][curr[1]];
             int next_distance = curr_distance + 1;
+            // Get its neighbors, which are unprocessed (-1).
             List<int[]> neighbors = getneighbors(distances, curr);
             for (int[] neighbor : neighbors) {
+                // Loop over the neighbors, update their distances in the matrix and add them to the queue.
                 int new_m = neighbor[0], new_n = neighbor[1];
                 distances[new_m][new_n] = next_distance;
                 queue.offer(new int[]{new_m, new_n});
             }
+            // After each level, update the max distance
             maxDistance = Math.max(curr_distance, maxDistance);
         }
+        // return.
         return maxDistance;
     }
     public static List<int[]> getneighbors(int[][] distances, int[] pos) {
@@ -181,6 +196,12 @@ public class BFS {
     public int[] findOrder(int numCourses, int[][] prerequisites) {
         /*
         Leet-code 210
+        In this problem, we are finding the order of the courses, in which
+        we have to take them with satisfying their prerequisites. Here, we
+        are using HashMap to represent a graph, where we are mapping each
+        course to the list of its prereqs. We will need indegree array which
+        will keep track of the number of prereqs for each course that have
+        to be satisfies, and then we need our ordering array which will be returned.
          */
         HashMap<Integer, List<Integer>> map = new HashMap<>();
         Deque<Integer> queue = new ArrayDeque<>();
@@ -189,30 +210,42 @@ public class BFS {
         int index = 0;
 
         for (int i  = 0; i < numCourses; i++) {
+            // Putting empty lists for each course in the map.
             map.put(i, new ArrayList<>());
+            // Initially all the courses have zero degree.
             indegree[i] = 0;
         }
         for (int[] prereq : prerequisites) {
+            // Populating the hashmap and the indegree array with mapping
+            // courses to their prereqs, and increasing their degree.
             int course  = prereq[0];
             int pre = prereq[1];
             map.get(course).add(pre);
             indegree[pre]++;
         }
         for (int i = 0; i < numCourses; i++) {
+            // Now, we will push any course which has a degree of zero
+            // that means it has no prereq and can be taken instantly.
             if (indegree[i] == 0) {
                 queue.offer(i);
             }
         }
         while (!queue.isEmpty()) {
-            int course = queue.poll();
-            ordering[index++] = course;
+            // Starting the BFS here
+            int course = queue.poll(); // Pop the current course which is free of its prereqs
+            ordering[index++] = course; // Adding that course to our ordering array and index++
             for (int prereq : map.get(course)) {
+                // Then we get their prereqs from the map, and decrease the degree of
+                // each prereq, as one prereq is done, and if their degree becomes 0, meaning
+                // they are free to take now, then we push them into the queue to be added later.
                 indegree[prereq]--;
                 if (indegree[prereq] == 0) {
                     queue.offer(prereq);
                 }
             }
         }
+        // if our index did reach the end of list then we return
+        // our ordering array else we just return empty array (not possible)
         return index == numCourses ? ordering : new int[0];
     }
 
