@@ -22,6 +22,34 @@ public class DFS {
         System.out.println(canVisitAllRooms(res));
     }
 
+    public static boolean hasPathSum(TreeNode root, int targetSum) {
+        /*
+         In this problem, we are trying to see if any root-to-leaf
+         path sums to target. For that we can use DFS and backtracking.
+         So, we would need a driver method here, which would perform
+         the recursive process, and we will give it proper arguments.
+         */
+        return DFS_check(root, targetSum, 0); // Running sum is starting at zero.
+    }
+    public static boolean DFS_check(TreeNode root, int targetSum, int runningSum) {
+        // First, we check our base cases
+        if (root == null) return false; // If we fell off the tree, return False.
+        if (runningSum > targetSum) return false; // If the sum is already large, no point in exploring.
+        if (runningSum + root.val == targetSum && root.left == null && root.right == null) {
+            // This satisfies both our conditions that the current
+            // running sum == target and current node is a leaf.
+            return true;
+        }
+        /*
+        Then we recurse forward with the new running sum
+        on the both left and right subtrees.
+         */
+        int new_sum = root.val +  runningSum;
+        // If the left subtree returns true, no point in checking the right.
+        if (DFS_check(root.left, targetSum, new_sum)) return true;
+        return DFS_check(root.right, targetSum, new_sum); // Else check the right for solution.
+    }
+
     public static boolean canVisitAllRooms(List<List<Integer>> rooms) {
         /*
         Leet-code 841
