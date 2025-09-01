@@ -26,14 +26,30 @@ An advanced collection of sophisticated algorithms and data structures in Java, 
 
 ## 🏗️ Project Structure
 ```
-DSA2/
+src/
+│
+├── Graphs/
+│   ├── BFS
+│   ├── DFS
+│   └──
+|
+├── Matrix/
+├   ├── DynamicPro
+|   ├── FastSlowPointers
+|   ├── TopKElements
+│
 ├── SortingAlgorithms/
-│   └── ArraySorts.java        # Complete sorting algorithm collection
-├── Trees/
-│   ├── AVLTree.java          # Self-balancing tree with rotations
-│   └── BSTree.java           # Standard binary search tree
-└── StringAlgorithms/
-    └── PatternMatching.java   # String pattern matching suite
+│   ├── ArraySorts
+│   └── BinarySearch
+│
+├── StringAlgorithms/
+│   └── PatternMatching
+│
+└── Trees/
+    ├── AVLTree
+    ├── BinarySearch
+    ├── BSTree
+    └── TreeProblems
 ```
 
 ## 💡 Advanced Implementations
